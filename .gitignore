@@ -1,1 +1,49 @@
+# Dependencies
+node_modules/
+**/node_modules/
 
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+*.cert
+serviceAccountKey*.json
+firebase-key*.json
+firebase-admin*.json
+**/serviceAccountKey*.json
+**/firebase-key*.json
+
+# Production and Build artifacts
+dist/
+build/
+**/dist/
+**/build/
+.output/
+
+# Logs and Debug
+*.log
+**/logs/
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS metadata
+.DS_Store
+Thumbs.db
