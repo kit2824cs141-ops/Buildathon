@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { 
   User, Award, BookOpen, Clock, FileText, CheckCircle, AlertCircle, 
   ChevronRight, Calendar, Settings, Sparkles, Brain, Check
@@ -15,18 +16,19 @@ export default function StudentDashboard() {
   };
 
   const activeTab = getTab();
+  const { userProfile } = useAuth();
 
-  // Profile State
+  // Profile State mapping to current user
   const [profile, setProfile] = useState({
-    name: 'Alex Carter',
-    id: 'STU-2026-9874',
-    email: 'alex.carter@eduportal.com',
-    phone: '+1 (555) 019-2834',
-    major: 'Computer Science & Engineering',
+    name: userProfile?.name || 'Loading...',
+    id: userProfile?.rollNumber || 'STU-NEW',
+    email: userProfile?.email || 'loading@email.com',
+    phone: userProfile?.phone || 'Not set',
+    major: userProfile?.department || 'Computer Science & Engineering',
     semester: '4th Semester (Sophomore)',
     gpa: '3.82',
-    bio: 'Passionate CS student focusing on Artificial Intelligence and Software Engineering. Active member of the Coding Club.',
-    avatar: 'A'
+    bio: 'Passionate student active in academics.',
+    avatar: userProfile?.name?.charAt(0) || 'S'
   });
 
   const [isEditing, setIsEditing] = useState(false);

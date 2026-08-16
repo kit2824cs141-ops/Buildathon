@@ -2,15 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AdminHeader from '../../components/AdminHeader';
 import AdminSidebar from '../../components/AdminSidebar';
 import AIAssistantWidget from '../../components/AIAssistantWidget';
-import { 
-  adminApi, 
-  initialAdminStats, 
-  initialStudents, 
-  initialTeachers, 
-  initialCourses, 
-  initialAssignments, 
-  initialExams 
-} from '../../services/api';
+import { adminApi } from '../../services/api';
 import { 
   Info, 
   Search, 
@@ -46,12 +38,12 @@ export default function AdminDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Data states
-  const [stats, setStats] = useState(initialAdminStats);
-  const [students, setStudents] = useState(initialStudents);
-  const [teachers, setTeachers] = useState(initialTeachers);
-  const [courses, setCourses] = useState(initialCourses);
-  const [assignments, setAssignments] = useState(initialAssignments);
-  const [exams, setExams] = useState(initialExams);
+  const [stats, setStats] = useState({ totalColleges: 0, activeSubscriptions: 0, totalProcessedVolume: 0, revenueSubtitle: '' });
+  const [students, setStudents] = useState([]);
+  const [teachers, setTeachers] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [exams, setExams] = useState([]);
 
   // Filters & Search
   const [searchTerm, setSearchTerm] = useState('');

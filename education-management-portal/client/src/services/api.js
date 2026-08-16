@@ -1,3 +1,5 @@
+// api.js — centralised Axios client for all backend routes
+// The base URL reads from VITE_API_URL (set this to http://localhost:5000/api in dev)
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -7,104 +9,160 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Initial mock datasets for seamless client-side operation & backend integration
-export const initialAdminStats = {
-  totalColleges: 4,
-  activeSubscriptions: 3,
-  totalStudents: 151,
-  totalTeachers: 28,
-  totalCourses: 14,
-  totalProcessedVolume: '₹4,85,000',
-  revenueSubtitle: 'Global Revenue Ledger',
-  activeAssignments: 18,
-  pendingExams: 4,
-  aiAlerts: 3
+// ─── Request interceptor — auto-attach Firebase ID token ──────────────────────
+// Import dynamically to avoid circular deps with AuthContext
+api.interceptors.request.use(async (config) => {
+  try {
+    const { auth } = await import('../config/firebase');
+    const user = auth.currentUser;
+    if (user) {
+      const token = await user.getIdToken();
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (_) {}
+  return config;
+});
+
+/* ══════════════════════════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════════════════════════ */
+export const authApi = {
+  register: (data)  => api.post('/auth/register', data),
+  login:    (data)  => api.post('/auth/login',    data),
+  getMe:    ()      => api.get('/auth/me'),
+  updateMe: (data)  => api.put('/auth/me',        data),
 };
 
-export const initialStudents = [
-  { id: 'STU-1001', name: 'Alex Smith', email: 'alex.smith@college.edu', department: 'Computer Science', gpa: 9.2, attendance: 62, status: 'Active', enrolledCourses: 4 },
-  { id: 'STU-1002', name: 'Priya Sharma', email: 'priya.sharma@college.edu', department: 'Electrical Eng.', gpa: 7.8, attendance: 88, status: 'Active', enrolledCourses: 3 },
-  { id: 'STU-1003', name: 'Marcus Vance', email: 'marcus.vance@college.edu', department: 'Mathematics', gpa: 8.4, attendance: 68, status: 'Pending', enrolledCourses: 5 },
-  { id: 'STU-1004', name: 'Sophia Chen', email: 'sophia.chen@college.edu', department: 'Computer Science', gpa: 9.8, attendance: 96, status: 'Active', enrolledCourses: 4 },
-  { id: 'STU-1005', name: 'David Miller', email: 'david.miller@college.edu', department: 'Physics', gpa: 6.2, attendance: 54, status: 'Suspended', enrolledCourses: 2 },
-];
+/* ══════════════════════════════════════════════════════════════
+   STUDENT
+══════════════════════════════════════════════════════════════ */
+export const studentApi = {
+  // Profile
+  getProfile:        ()           => api.get('/student/profile'),
 
-export const initialTeachers = [
-  { id: 'TCH-201', name: 'Dr. Alan Turing', email: 'alan.turing@college.edu', department: 'Computer Science', coursesAssigned: ['CS-101', 'CS-201', 'AI-401'], status: 'Active', rating: 4.9 },
-  { id: 'TCH-202', name: 'Prof. Katherine Johnson', email: 'k.johnson@college.edu', department: 'Mathematics', coursesAssigned: ['MATH-202', 'MATH-301'], status: 'Active', rating: 4.8 },
-  { id: 'TCH-203', name: 'Dr. Richard Feynman', email: 'r.feynman@college.edu', department: 'Physics', coursesAssigned: ['PHYS-101', 'PHYS-302'], status: 'Active', rating: 5.0 },
-  { id: 'TCH-204', name: 'Prof. Ada Lovelace', email: 'ada.lovelace@college.edu', department: 'Computer Science', coursesAssigned: ['CS-305'], status: 'On Leave', rating: 4.7 }
-];
+  // Courses
+  getCourses:        ()           => api.get('/student/courses'),
+  getCourseDetails:  (id)         => api.get(`/student/courses/${id}`),
+  enrollInCourse:    (id)         => api.post(`/student/courses/${id}/enroll`),
+  getMyCourses:      ()           => api.get('/student/my-courses'),
 
-export const initialCourses = [
-  { id: 'CS-101', title: 'Introduction to Computer Science', department: 'Computer Science', instructor: 'Dr. Alan Turing', studentsEnrolled: 45, credits: 4, status: 'Active' },
-  { id: 'CS-201', title: 'Data Structures & Algorithms', department: 'Computer Science', instructor: 'Dr. Alan Turing', studentsEnrolled: 38, credits: 4, status: 'Active' },
-  { id: 'MATH-202', title: 'Linear Algebra & Calculus', department: 'Mathematics', instructor: 'Prof. Katherine Johnson', studentsEnrolled: 52, credits: 3, status: 'Active' },
-  { id: 'PHYS-101', title: 'Quantum Physics Fundamentals', department: 'Physics', instructor: 'Dr. Richard Feynman', studentsEnrolled: 29, credits: 4, status: 'Active' }
-];
+  // Assignments
+  getAssignments:    ()           => api.get('/student/assignments'),
+  getAssignment:     (id)         => api.get(`/student/assignments/${id}`),
+  submitAssignment:  (id, data)   => api.post(`/student/assignments/${id}/submit`, data),
 
-export const initialAssignments = [
-  { id: 'ASN-301', title: 'Binary Tree Implementation', course: 'CS-201', dueDate: '2026-08-25', totalSubmissions: 32, maxStudents: 38, status: 'Active' },
-  { id: 'ASN-302', title: 'Matrix Eigenvalues Problem Set', course: 'MATH-202', dueDate: '2026-08-20', totalSubmissions: 48, maxStudents: 52, status: 'Active' },
-  { id: 'ASN-303', title: 'Schrödinger Wave Equation Lab', course: 'PHYS-101', dueDate: '2026-08-15', totalSubmissions: 29, maxStudents: 29, status: 'Closed' }
-];
+  // Attendance
+  getAttendance:     ()           => api.get('/student/attendance'),
+  getAttendanceByCourse: (id)     => api.get(`/student/attendance/${id}`),
 
-export const initialExams = [
-  { id: 'EX-901', name: 'Midterm Assessment - Data Structures', course: 'CS-201', date: '2026-09-10', passPercentage: '84%', status: 'Published' },
-  { id: 'EX-902', name: 'Linear Algebra Final Exam', course: 'MATH-202', date: '2026-09-15', passPercentage: '91%', status: 'Scheduled' },
-  { id: 'EX-903', name: 'Quantum Mechanics Lab Practical', course: 'PHYS-101', date: '2026-09-02', passPercentage: '78%', status: 'Pending Review' }
-];
+  // Grades & Exams
+  getGrades:         ()           => api.get('/student/grades'),
+  getGradesByCourse: (id)         => api.get(`/student/grades/${id}`),
+  getExams:          ()           => api.get('/student/exams'),
 
-// Admin API calls with fallback to local mock data
+  // Progress
+  getProgress:       ()           => api.get('/student/progress'),
+  computeProgress:   ()           => api.post('/student/progress/compute'),
+
+  // AI Insights
+  getInsights:       ()           => api.get('/student/insights'),
+  analyzeInsights:   ()           => api.post('/student/insights/analyze'),
+  markAlertRead:     (alertId)    => api.patch(`/student/insights/alerts/${alertId}/read`),
+
+  // Reports
+  getReports:        ()           => api.get('/student/reports'),
+  generateReport:    ()           => api.post('/student/reports/generate'),
+};
+
+/* ══════════════════════════════════════════════════════════════
+   TEACHER
+══════════════════════════════════════════════════════════════ */
+export const teacherApi = {
+  // Profile
+  getProfile:          ()              => api.get('/teacher/profile'),
+
+  // Courses
+  getMyCourses:        ()              => api.get('/teacher/courses'),
+  getCourseDetails:    (id)            => api.get(`/teacher/courses/${id}`),
+  addAnnouncement:     (id, data)      => api.post(`/teacher/courses/${id}/announcements`, data),
+
+  // Assignments
+  getAssignments:      (courseId)      => api.get('/teacher/assignments', { params: { courseId } }),
+  createAssignment:    (data)          => api.post('/teacher/assignments', data),
+  updateAssignment:    (id, data)      => api.put(`/teacher/assignments/${id}`, data),
+  deleteAssignment:    (id)            => api.delete(`/teacher/assignments/${id}`),
+  getSubmissions:      (id)            => api.get(`/teacher/assignments/${id}/submissions`),
+  gradeSubmission:     (id, sid, data) => api.patch(`/teacher/assignments/${id}/submissions/${sid}/grade`, data),
+
+  // Attendance
+  markAttendance:      (classId, date, data) => api.post(`/teacher/attendance/${classId}/${date}`, data),
+  getClassAttendance:  (classId)       => api.get(`/teacher/attendance/${classId}`),
+  getAttendanceByDate: (classId, date) => api.get(`/teacher/attendance/${classId}/${date}`),
+  updateStudentAttendance: (classId, date, sid, data) => api.patch(`/teacher/attendance/${classId}/${date}/${sid}`, data),
+
+  // Exams
+  getExams:            (courseId)      => api.get('/teacher/exams', { params: { courseId } }),
+  createExam:          (data)          => api.post('/teacher/exams', data),
+  submitResult:        (examId, sid, data) => api.post(`/teacher/exams/${examId}/results/${sid}`, data),
+  getExamResults:      (examId)        => api.get(`/teacher/exams/${examId}/results`),
+
+  // Students
+  getStudents:         ()              => api.get('/teacher/students'),
+  getStudentInsights:  (sid)           => api.get(`/teacher/students/${sid}/insights`),
+
+  // Reports
+  getClassReports:     (classId)       => api.get(`/teacher/reports/class/${classId}`),
+  generateClassReport: (classId, data) => api.post(`/teacher/reports/class/${classId}/generate`, data),
+};
+
+/* ══════════════════════════════════════════════════════════════
+   ADMIN
+══════════════════════════════════════════════════════════════ */
 export const adminApi = {
-  getStats: async () => {
-    try {
-      const res = await api.get('/admin/stats');
-      return res.data;
-    } catch (e) {
-      return initialAdminStats;
-    }
-  },
-  getStudents: async () => {
-    try {
-      const res = await api.get('/admin/students');
-      return res.data;
-    } catch (e) {
-      return initialStudents;
-    }
-  },
-  getTeachers: async () => {
-    try {
-      const res = await api.get('/admin/teachers');
-      return res.data;
-    } catch (e) {
-      return initialTeachers;
-    }
-  },
-  getCourses: async () => {
-    try {
-      const res = await api.get('/admin/courses');
-      return res.data;
-    } catch (e) {
-      return initialCourses;
-    }
-  },
-  getAssignments: async () => {
-    try {
-      const res = await api.get('/admin/assignments');
-      return res.data;
-    } catch (e) {
-      return initialAssignments;
-    }
-  },
-  getExams: async () => {
-    try {
-      const res = await api.get('/admin/exams');
-      return res.data;
-    } catch (e) {
-      return initialExams;
-    }
-  }
+  // Stats
+  getStats:            ()              => api.get('/admin/stats'),
+
+  // Users
+  getAllUsers:          ()              => api.get('/admin/users'),
+  getUsersByRole:       (role)          => api.get(`/admin/users/role/${role}`),
+  getUserById:          (uid)           => api.get(`/admin/users/${uid}`),
+  updateUser:           (uid, data)     => api.put(`/admin/users/${uid}`, data),
+  deleteUser:           (uid)           => api.delete(`/admin/users/${uid}`),
+  setUserRole:          (uid, role)     => api.patch(`/admin/users/${uid}/role`, { role }),
+
+  // Courses
+  getAllCourses:        ()              => api.get('/admin/courses'),
+  createCourse:        (data)          => api.post('/admin/courses', data),
+  updateCourse:        (id, data)      => api.put(`/admin/courses/${id}`, data),
+  deleteCourse:        (id)            => api.delete(`/admin/courses/${id}`),
+
+  // Classes
+  getAllClasses:        ()              => api.get('/admin/classes'),
+  createClass:         (data)          => api.post('/admin/classes', data),
+  updateClass:         (id, data)      => api.put(`/admin/classes/${id}`, data),
+  deleteClass:         (id)            => api.delete(`/admin/classes/${id}`),
+
+  // Exams
+  getAllExams:          ()              => api.get('/admin/exams'),
+  deleteExam:          (id)            => api.delete(`/admin/exams/${id}`),
+
+  // AI Insights
+  getAllInsights:       ()              => api.get('/admin/insights'),
+  getStudentInsights:  (sid)           => api.get(`/admin/insights/${sid}`),
+  analyzeStudent:      (sid)           => api.post(`/admin/insights/${sid}/analyze`),
+
+  // Announcements
+  getAnnouncements:    ()              => api.get('/admin/announcements'),
+  createAnnouncement:  (data)          => api.post('/admin/announcements', data),
+
+  // Reports
+  getStudentReports:   (sid)           => api.get(`/admin/reports/student/${sid}`),
+  generateStudentReport: (sid)         => api.post(`/admin/reports/student/${sid}/generate`),
+  getClassReports:     (classId)       => api.get(`/admin/reports/class/${classId}`),
+  generateClassReport: (classId, data) => api.post(`/admin/reports/class/${classId}/generate`, data),
+
+  // Contact Queries
+  getContactQueries:   ()              => api.get('/admin/contact-queries'),
 };
 
 export default api;
