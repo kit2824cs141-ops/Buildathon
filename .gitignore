@@ -1,49 +1,101 @@
-# Dependencies
+# ─── Dependency directories ───────────────────────────────────────────────────
 node_modules/
 **/node_modules/
+jspm_packages/
+web_modules/
 
-# Environment variables and secrets
+# ─── Build & distribution ─────────────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+out/
+**/dist/
+**/build/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.turbo/
+.output/
+
+# ─── Environment & Secrets (NEVER commit these) ───────────────────────────────
 .env
 .env.*
+.env*.local
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+.env.staging
 !.env.example
 **/.env
 **/.env.*
 !**/.env.example
+
+# ─── Firebase & Service Account Secrets ───────────────────────────────────────
+serviceAccountKey*.json
+**/serviceAccountKey*.json
+*firebase-service-account*.json
+*firebase-adminsdk*.json
+*firebase-key*.json
+**/firebase-key*.json
+firebase-debug.log
+firebase-debug.*.log
+.firebase/
 *.pem
 *.key
 *.cert
-serviceAccountKey*.json
-firebase-key*.json
-firebase-admin*.json
-**/serviceAccountKey*.json
-**/firebase-key*.json
 
-# Production and Build artifacts
-dist/
-build/
-**/dist/
-**/build/
-.output/
-
-# Logs and Debug
-*.log
-**/logs/
-**/*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-firebase-debug.log
-
-# IDE and Editor files
+# ─── IDEs & Editors ───────────────────────────────────────────────────────────
 .vscode/
+!.vscode/extensions.json
 .idea/
-*.swp
-*.swo
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
+*.sw?
+*.swp
+*.swo
+.project
+.classpath
+.settings/
 
-# OS metadata
+# ─── OS Generated ─────────────────────────────────────────────────────────────
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+**/*.log
+**/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ─── Databases ────────────────────────────────────────────────────────────────
+*.sql
+*.sqlite
+
+# ─── Testing & Coverage ───────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+cypress/videos/
+cypress/screenshots/
+playwright-report/
+test-results/
+
+# ─── Deployment / Hosting ─────────────────────────────────────────────────────
+.vercel/
+.netlify/
+.fly/

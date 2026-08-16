@@ -18,6 +18,13 @@ dist-ssr
 .env.*
 !.env.example
 
+# Environment & Secret files
+.env
+.env.local
+.env.*.local
+*.json.secret
+*serviceAccountKey*.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
