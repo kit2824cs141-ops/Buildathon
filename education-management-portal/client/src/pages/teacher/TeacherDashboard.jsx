@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { Users, BookOpen, FileText, Award, ClipboardCheck, Sparkles, TrendingUp, AlertTriangle } from 'lucide-react';
 import StatCard from './components/StatCard';
 import SectionCard from './components/SectionCard';
@@ -18,6 +19,7 @@ export default function TeacherDashboard() {
   const [assignments, setAssignments] = useState([]);
   const [schedule, setSchedule] = useState([]);
   const [aiSummary, setAiSummary] = useState(null);
+  const { userProfile } = useAuth();
 
   useEffect(() => {
     async function loadData() {
@@ -77,8 +79,8 @@ export default function TeacherDashboard() {
     <>
       {/* Welcome */}
       <div className="teacher-welcome">
-        <h1>Welcome back, Prof. Muruga! 👋</h1>
-        <p>Here's what's happening with your classes today — Thursday, August 16, 2026</p>
+        <h1>Welcome back, {userProfile?.name || 'Professor'}! 👋</h1>
+        <p>Here's what's happening with your classes today — {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'})}</p>
       </div>
 
       {/* Smart Warning Alerts Banner */}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { 
   User, BookOpen, FileText, Calendar, Award, Compass, BarChart2, 
   HelpCircle, MessageSquare, Sun, Moon, LogOut, ChevronDown, Bell, CheckSquare, Sparkles, TrendingUp
@@ -8,6 +9,7 @@ import {
 export default function StudentLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { userProfile, logout } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showChat, setShowChat] = useState(false);
@@ -126,7 +128,8 @@ export default function StudentLayout({ children }) {
     return location.pathname === path && !location.search;
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -161,16 +164,16 @@ export default function StudentLayout({ children }) {
 
           <div className="profile-dropdown-wrapper">
             <div className="profile-trigger" onClick={() => setShowProfileMenu(!showProfileMenu)}>
-              <span className="avatar-badge">S</span>
-              <span className="profile-name">Global Student</span>
+              <span className="avatar-badge">{userProfile?.name?.charAt(0) || 'S'}</span>
+              <span className="profile-name">{userProfile?.name || 'Loading...'}</span>
               <ChevronDown size={16} />
             </div>
 
             {showProfileMenu && (
               <div className="profile-menu">
                 <div className="profile-menu-header">
-                  <p className="menu-name">Global Student</p>
-                  <p className="menu-email">student@eduportal.com</p>
+                  <p className="menu-name">{userProfile?.name || 'Student'}</p>
+                  <p className="menu-email">{userProfile?.email || 'student@eduportal.com'}</p>
                 </div>
                 <hr />
                 <Link to="/student/dashboard?tab=profile" className="profile-menu-item" onClick={() => setShowProfileMenu(false)}>
