@@ -13,6 +13,7 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
 // Student Pages
+import StudentLayout from './components/StudentLayout';
 import StudentDashboard from './pages/student/StudentDashboard';
 import MyCourses from './pages/student/MyCourses';
 import Assignments from './pages/student/Assignments';
@@ -45,12 +46,12 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           {/* Student Routes */}
-          <Route path="/student/dashboard" element={<StudentDashboard />} />
-          <Route path="/student/courses" element={<MyCourses />} />
-          <Route path="/student/assignments" element={<Assignments />} />
-          <Route path="/student/attendance" element={<Attendance />} />
-          <Route path="/student/grades" element={<Grades />} />
-          <Route path="/student/progress" element={<Progress />} />
+          <Route path="/student/dashboard" element={<StudentLayout><StudentDashboard /></StudentLayout>} />
+          <Route path="/student/courses" element={<StudentLayout><MyCourses /></StudentLayout>} />
+          <Route path="/student/assignments" element={<StudentLayout><Assignments /></StudentLayout>} />
+          <Route path="/student/attendance" element={<StudentLayout><Attendance /></StudentLayout>} />
+          <Route path="/student/grades" element={<StudentLayout><Grades /></StudentLayout>} />
+          <Route path="/student/progress" element={<StudentLayout><Progress /></StudentLayout>} />
 
           {/* Teacher Routes */}
           <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
