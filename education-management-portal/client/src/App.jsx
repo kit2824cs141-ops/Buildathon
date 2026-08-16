@@ -1,5 +1,5 @@
-// Main Routing
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+// Main Routing - Verified Wrap
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
 // Public Pages
@@ -21,20 +21,44 @@ import Attendance from './pages/student/Attendance';
 import Grades from './pages/student/Grades';
 import Progress from './pages/student/Progress';
 
-// Teacher Pages
+// Teacher Pages & Layout
+import TeacherLayout from './pages/teacher/TeacherLayout';
 import TeacherDashboard from './pages/teacher/TeacherDashboard';
+import TeacherCourses from './pages/teacher/TeacherCourses';
+import TeacherCourseDetails from './pages/teacher/TeacherCourseDetails';
+import TeacherClasses from './pages/teacher/TeacherClasses';
+import TeacherClassDetails from './pages/teacher/TeacherClassDetails';
+import TeacherStudents from './pages/teacher/TeacherStudents';
+import TeacherStudentDetails from './pages/teacher/TeacherStudentDetails';
+import TeacherAssignments from './pages/teacher/TeacherAssignments';
+import TeacherAssignmentDetails from './pages/teacher/TeacherAssignmentDetails';
+import TeacherCreateAssignment from './pages/teacher/TeacherCreateAssignment';
+import TeacherAttendance from './pages/teacher/TeacherAttendance';
+import TeacherAttendanceHistory from './pages/teacher/TeacherAttendanceHistory';
+import TeacherExaminations from './pages/teacher/TeacherExaminations';
+import TeacherExaminationDetails from './pages/teacher/TeacherExaminationDetails';
+import TeacherEnterMarks from './pages/teacher/TeacherEnterMarks';
+import TeacherTimetable from './pages/teacher/TeacherTimetable';
+import TeacherPerformance from './pages/teacher/TeacherPerformance';
+import TeacherReports from './pages/teacher/TeacherReports';
+import TeacherAIInsights from './pages/teacher/TeacherAIInsights';
+import TeacherAIAssistant from './pages/teacher/TeacherAIAssistant';
+import TeacherNotifications from './pages/teacher/TeacherNotifications';
+import TeacherSettings from './pages/teacher/TeacherSettings';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 // Context
 import { AuthProvider } from './context/AuthContext';
+import { FeedbackProvider } from './context/FeedbackContext';
 
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
+      <FeedbackProvider>
+        <Router>
+          <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
@@ -53,14 +77,39 @@ function App() {
           <Route path="/student/grades" element={<StudentLayout><Grades /></StudentLayout>} />
           <Route path="/student/progress" element={<StudentLayout><Progress /></StudentLayout>} />
 
-          {/* Teacher Routes */}
-          <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+          {/* Teacher Routes nested in TeacherLayout */}
+          <Route path="/teacher" element={<TeacherLayout />}>
+            <Route index element={<Navigate to="/teacher/dashboard" replace />} />
+            <Route path="dashboard" element={<TeacherDashboard />} />
+            <Route path="courses" element={<TeacherCourses />} />
+            <Route path="courses/:id" element={<TeacherCourseDetails />} />
+            <Route path="classes" element={<TeacherClasses />} />
+            <Route path="classes/:id" element={<TeacherClassDetails />} />
+            <Route path="students" element={<TeacherStudents />} />
+            <Route path="students/:id" element={<TeacherStudentDetails />} />
+            <Route path="assignments" element={<TeacherAssignments />} />
+            <Route path="assignments/create" element={<TeacherCreateAssignment />} />
+            <Route path="assignments/:id" element={<TeacherAssignmentDetails />} />
+            <Route path="attendance" element={<TeacherAttendance />} />
+            <Route path="attendance/history" element={<TeacherAttendanceHistory />} />
+            <Route path="examinations" element={<TeacherExaminations />} />
+            <Route path="examinations/:id" element={<TeacherExaminationDetails />} />
+            <Route path="examinations/:id/marks" element={<TeacherEnterMarks />} />
+            <Route path="timetable" element={<TeacherTimetable />} />
+            <Route path="performance" element={<TeacherPerformance />} />
+            <Route path="reports" element={<TeacherReports />} />
+            <Route path="ai-insights" element={<TeacherAIInsights />} />
+            <Route path="ai-assistant" element={<TeacherAIAssistant />} />
+            <Route path="notifications" element={<TeacherNotifications />} />
+            <Route path="settings" element={<TeacherSettings />} />
+          </Route>
 
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Routes>
       </Router>
-    </AuthProvider>
+    </FeedbackProvider>
+  </AuthProvider>
   );
 }
 
