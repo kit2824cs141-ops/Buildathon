@@ -2,7 +2,7 @@
 const express  = require('express');
 const router   = express.Router();
 
-<<<<<<< HEAD
+
 // Stats Endpoint
 router.get('/stats', adminController.getStats);
 
@@ -25,7 +25,7 @@ router.get('/exams', adminController.getExams);
 
 // AI Insights Endpoint
 router.get('/ai-insights', adminController.getAIInsights);
-=======
+
 const ctrl             = require('../controllers/adminController');
 const { verifyToken }  = require('../middleware/authMiddleware');
 const { checkRole }    = require('../middleware/roleMiddleware');
@@ -33,6 +33,9 @@ const { checkRole }    = require('../middleware/roleMiddleware');
 // All admin routes require a valid token + admin role
 router.use(verifyToken);
 router.use(checkRole('admin'));
+
+/* ─── Stats ────────────── */
+router.get('/stats',                     ctrl.getStats);
 
 /* ─── Users ────────────── */
 router.get('/users',                     ctrl.getAllUsers);
@@ -75,6 +78,5 @@ router.post('/reports/class/:classId/generate',         ctrl.generateClassReport
 
 /* ─── Contact Queries ───── */
 router.get('/contact-queries',           ctrl.getContactQueries);
->>>>>>> main
 
 module.exports = router;
